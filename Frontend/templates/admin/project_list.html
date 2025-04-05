@@ -31,29 +31,6 @@
                         <i class="fas fa-map-marker-alt"></i>
                         <span>{{ project.p_location }}</span>
                     </div>
-                    <div class="project-budget">
-                        <div class="budget-item flex">
-                            <span class="budget-label">Total Budget</span>
-                            <span class="budget-value">₹{{ project.total_budget }}</span>
-                        </div>
-                        {% set amount = get_total_amount(uid,project.p_name) %}
-                        <div class="budget-item ">
-                            <span class="budget-label">Contractor Expence</span>
-                            <span class="budget-value pending">₹{{ amount[0] | round(2)}}</span>
-                        </div>
-                        <div class="budget-item ">
-                            <span class="budget-label">Supplier Expence</span>
-                            <span class="budget-value pending">₹{{ amount[1] | round(2)}}</span>
-                        </div>
-                        <div class="budget-item ">
-                            <span class="budget-label">Received</span>
-                            <span class="budget-value success">₹{{ amount[2] | round(2)}}</span>
-                        </div>
-                        <div class="budget-item ">
-                            <span class="budget-label">Pending</span>
-                            <span class="budget-value pending">₹{{ (amount[2] - (amount[0] + amount[1])) | round(2) }}</span>
-                        </div>
-                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -61,7 +38,6 @@
     </div>
 </div>
 
-<!-- Audit Modal -->
 <div id="auditModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
@@ -200,7 +176,6 @@ function validateDateRange() {
             return false;
         }
         
-        // Check if date range is not more than 1 year
         const oneYearFromNow = new Date();
         oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
         
@@ -229,7 +204,6 @@ function openAuditModal(uid, pname) {
     document.getElementById('auditModal').style.display = 'block';
     document.getElementById('auditForm').action = `/admin/projects/audit/${uid}/${pname}`;
     
-    // Reset form and errors when opening modal
     document.getElementById('auditForm').reset();
     document.getElementById('from_date_error').style.display = 'none';
     document.getElementById('to_date_error').style.display = 'none';
@@ -237,19 +211,16 @@ function openAuditModal(uid, pname) {
     document.getElementById('to_date').classList.remove('error');
 }
 
-// Close modal when clicking the X
 document.querySelector('.close').onclick = function() {
     document.getElementById('auditModal').style.display = 'none';
 }
 
-// Close modal when clicking outside
 window.onclick = function(event) {
     if (event.target == document.getElementById('auditModal')) {
         document.getElementById('auditModal').style.display = 'none';
     }
 }
 
-// Set max date for to_date to today
 document.getElementById('to_date').max = new Date().toISOString().split('T')[0];
 </script>
 {% endblock %}

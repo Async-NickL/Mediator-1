@@ -3,6 +3,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from Backend.models.dbconfig import db_connection
 from functools import wraps
 from datetime import datetime, timedelta
+from flask_wtf.csrf import CSRFError
 
 admin = Blueprint('admin', __name__)
 
@@ -314,15 +315,16 @@ def get_total_amount(client_name, project_name):
     cur.close()
     conn.close()
     return total_amount
+
 @admin.route('/admin/projects/<uid>', methods=['GET', 'POST'])
 @admin_required
 def all_projects(uid):
     conn,cur=db_connection()
-    query='''select p_name,p_location,start_date,end_date,design_concept,project_type,total_budget FROM project_details WHERE c_name=%s'''
+    query='''select p_name,p_location,start_date,end_date,design_concept,project_type FROM project_details WHERE c_name=%s'''
     cur.execute(query,(uid,))
     data=cur.fetchall()
-    project_dict = [dict(p_name=row[0], p_location=row[1], start_date=row[2], end_date=row[3], design_concept=row[4], project_type=row[5], total_budget=row[6]) for row in data]
-    return render_template("admin/project_list.html", uid=uid, projects=project_dict, get_total_amount=get_total_amount)
+    project_dict = [dict(p_name=row[0], p_location=row[1], start_date=row[2], end_date=row[3], design_concept=row[4], project_type=row[5]) for row in data]
+    return render_template("admin/project_list.html", uid=uid, projects=project_dict)
 
 
 @admin.route('/admin/projects/print/<uid>/<pname>', methods=['GET', 'POST'])
@@ -1118,3 +1120,7 @@ def all_expenditures():
         conn.close()
     
     return render_template('admin/all_expenditures.html', expenditures=expenditures)
+
+@admin.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    return render_template('error.html', message="CSRF token is missing or invalid. Please try again."), 400

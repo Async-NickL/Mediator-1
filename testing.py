@@ -6,7 +6,7 @@ conn=psycopg2.connect("postgresql://midd_owner:npg_lAmbJFE9GTh1@ep-rough-bread-a
 cur=conn.cursor()
 
 
-# Insert a test supervisor user
+
 password = generate_password_hash("ADMIN")
 try:
     cur.execute("""
